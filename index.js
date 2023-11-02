@@ -4,6 +4,8 @@ import userRoutes from "./routes/userRoutes.js";
 import dotenv from "dotenv";
 
 const app = express();
+
+//To use body parser
 app.use(express.json());
 
 dotenv.config();
