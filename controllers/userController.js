@@ -1,4 +1,5 @@
 import User from "../models/User.js";
+import generateJWT from "../helpers/generateJWT.js";
 
 const register = async (req, res) => {
   //Check duplicated emails/users
@@ -45,6 +46,7 @@ const authenticate = async (req, res) => {
       _id: user._id,
       name: user.name,
       email: user.email,
+      token: generateJWT(user._id),
     });
   } else {
     const error = new Error("Username or password not correct");
@@ -52,4 +54,25 @@ const authenticate = async (req, res) => {
   }
 };
 
-export { register, authenticate };
+const confirmUser = async (req, res) => {
+  //Check if there is a user with the token and create an instance of that user
+  const user = await User.findOne({ token: req.params.token });
+
+  //If token is not valid
+  if (!user) {
+    const error = new Error("No valid token");
+    return res.status(401).json({ msg: error.message });
+  }
+
+  //In case validation pass
+  try {
+    user.confirmed = true;
+    user.token = "";
+    await user.save();
+    res.json({ msg: "User confirmed" });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export { register, authenticate, confirmUser };
