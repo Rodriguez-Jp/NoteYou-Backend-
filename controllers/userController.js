@@ -75,4 +75,73 @@ const confirmUser = async (req, res) => {
   }
 };
 
-export { register, authenticate, confirmUser };
+const resetPassword = async (req, res) => {
+  const { email } = req.body;
+
+  //Check if the user exist
+  const user = await User.findOne({ email });
+
+  //In case user don't exist
+  if (!user) {
+    const error = new Error("No user found");
+    return res.status(404).json({ msg: error.message });
+  }
+
+  //In case it exist, creates a new token for reset password
+  try {
+    user.token = crypto.randomUUID();
+    await user.save();
+    res.json("Email sent with instructions");
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const checkToken = async (req, res) => {
+  const { token } = req.params;
+
+  const user = await User.findOne({ token });
+
+  if (!user) {
+    const error = new Error("Invalid token");
+    return res.status(403).json({ msg: error.message });
+  }
+
+  res.json({ msg: "Valid token " });
+};
+
+const setNewPassword = async (req, res) => {
+  const { password } = req.body;
+  const { token } = req.params;
+
+  const user = await User.findOne({ token });
+
+  if (!user) {
+    const error = new Error("Invalid token");
+    return res.status(403).json({ msg: error.message });
+  }
+
+  //Change the password and clear the token
+  try {
+    user.password = password;
+    user.token = "";
+    await user.save();
+    res.json({ msg: "Password modified!" });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const profile = async (req, res) => {
+  res.json(req.user);
+};
+
+export {
+  register,
+  authenticate,
+  confirmUser,
+  resetPassword,
+  checkToken,
+  setNewPassword,
+  profile,
+};
