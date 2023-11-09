@@ -27,7 +27,7 @@ const checkAuth = async (req, res, next) => {
 
   if (!jwToken) {
     const error = new Error("Invalid token");
-    res.status(401).json({ msg: error.message });
+    return res.status(401).json({ msg: error.message });
   }
 };
 
