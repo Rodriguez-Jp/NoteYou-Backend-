@@ -21,25 +21,68 @@ const listNotes = async (req, res) => {
 
 const showNote = async (req, res) => {
   const { id } = req.params;
-  const note = await Notes.findById(id);
+  try {
+    const note = await Notes.findById(id);
 
-  if (!note) {
-    return res.status(404).json({ msg: "Note not found" });
+    if (!note) {
+      const error = new Error("Note not found");
+      return res.status(404).json({ msg: error.message });
+    }
+
+    if (note.author.toString() !== req.user._id.toString()) {
+      const error = new Error("Not authorized");
+      return res.status(404).json({ msg: error.message });
+    }
+    res.json(note);
+  } catch (error) {
+    res.status(404).json({ msg: "Invalid Id" });
   }
-
-  //   if (note.author.toString() !== req.user._id.toString()) {
-  //     return res.status(401).json({ msg: "Not authorized" });
-  //   }
-
-  res.json(note);
 };
 
 const editNote = async (req, res) => {
-  console.log("hello");
+  const { id } = req.params;
+  try {
+    const note = await Notes.findById(id);
+
+    if (!note) {
+      const error = new Error("Note not found");
+      return res.status(404).json({ msg: error.message });
+    }
+
+    if (note.author.toString() !== req.user._id.toString()) {
+      const error = new Error("Not authorized");
+      return res.status(404).json({ msg: error.message });
+    }
+
+    note.title = req.body.title || note.title;
+    note.description = req.body.description || note.description;
+    await note.save();
+    res.json(note);
+  } catch (error) {
+    res.status(404).json({ msg: "Invalid Id" });
+  }
 };
 
 const deleteNote = async (req, res) => {
-  console.log("hello");
+  const { id } = req.params;
+  try {
+    const note = await Notes.findById(id);
+
+    if (!note) {
+      const error = new Error("Note not found");
+      return res.status(404).json({ msg: error.message });
+    }
+
+    if (note.author.toString() !== req.user._id.toString()) {
+      const error = new Error("Not authorized");
+      return res.status(404).json({ msg: error.message });
+    }
+
+    await note.deleteOne();
+    res.json({ msg: "Note deleted" });
+  } catch (error) {
+    res.status(404).json({ msg: "Invalid Id" });
+  }
 };
 
 const addCollaborator = async (req, res) => {
