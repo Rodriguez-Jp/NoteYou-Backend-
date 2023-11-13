@@ -16,8 +16,10 @@ const register = async (req, res) => {
     const user = new User(req.body);
     //Generates the token for confirmation
     user.token = crypto.randomUUID();
-    const savedUser = await user.save();
-    res.json(savedUser);
+    await user.save();
+    res.json({
+      msg: "User created succesfully, please check your email to confirm your account",
+    });
   } catch (error) {
     console.log(error);
   }
