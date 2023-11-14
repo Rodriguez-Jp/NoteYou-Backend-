@@ -1,6 +1,6 @@
 import User from "../models/User.js";
 import generateJWT from "../helpers/generateJWT.js";
-import { registerEmail } from "../helpers/emails.js";
+import { forgotPasswordEmail, registerEmail } from "../helpers/emails.js";
 
 const register = async (req, res) => {
   //Check duplicated emails/users
@@ -102,6 +102,11 @@ const resetPassword = async (req, res) => {
   try {
     user.token = crypto.randomUUID();
     await user.save();
+    forgotPasswordEmail({
+      name: user.name,
+      email: user.email,
+      token: user.token,
+    });
     res.json("Email sent with instructions");
   } catch (error) {
     console.log(error);
