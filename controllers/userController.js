@@ -1,5 +1,6 @@
 import User from "../models/User.js";
 import generateJWT from "../helpers/generateJWT.js";
+import { registerEmail } from "../helpers/emails.js";
 
 const register = async (req, res) => {
   //Check duplicated emails/users
@@ -17,6 +18,14 @@ const register = async (req, res) => {
     //Generates the token for confirmation
     user.token = crypto.randomUUID();
     await user.save();
+
+    //Sends confirmation email
+    registerEmail({
+      name: user.name,
+      email: user.email,
+      token: user.token,
+    });
+
     res.json({
       msg: "User created succesfully, please check your email to confirm your account",
     });
