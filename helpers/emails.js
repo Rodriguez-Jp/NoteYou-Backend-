@@ -4,11 +4,11 @@ const registerEmail = async (data) => {
   const { name, email, token } = data;
 
   const transport = nodemailer.createTransport({
-    host: "sandbox.smtp.mailtrap.io",
-    port: 2525,
+    host: process.env.EMAIL_HOST,
+    port: process.env.EMAIL_PORT,
     auth: {
-      user: "7cd523ff89e45d",
-      pass: "a91d1452e6445c",
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
     },
   });
 
@@ -269,21 +269,18 @@ const registerEmail = async (data) => {
     subject: "Confirm your account in NoteYou!",
     html,
   };
-
-  const info = await transport.sendMail(msg);
-
-  console.log(info);
+  await transport.sendMail(msg);
 };
 
 const forgotPasswordEmail = async (data) => {
   const { name, email, token } = data;
 
   const transport = nodemailer.createTransport({
-    host: "sandbox.smtp.mailtrap.io",
-    port: 2525,
+    host: process.env.EMAIL_HOST,
+    port: process.env.EMAIL_PORT,
     auth: {
-      user: "7cd523ff89e45d",
-      pass: "a91d1452e6445c",
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
     },
   });
 
@@ -466,7 +463,7 @@ const forgotPasswordEmail = async (data) => {
                         <table border="0" cellpadding="0" cellspacing="0">
                           <tr>
                             <td align="center" bgcolor="#1a82e2" style="border-radius: 6px;">
-                              <a href="${process.env.FRONTEND_HOST}/forgot-password/${token}" target="_blank" style="display: inline-block; padding: 16px 36px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; color: #ffffff; text-decoration: none; border-radius: 6px;">Confirm your account</a>
+                              <a href="${process.env.FRONTEND_HOST}/forgot-password/${token}" target="_blank" style="display: inline-block; padding: 16px 36px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; color: #ffffff; text-decoration: none; border-radius: 6px;">Reset your password</a>
                             </td>
                           </tr>
                         </table>
@@ -545,9 +542,7 @@ const forgotPasswordEmail = async (data) => {
     html,
   };
 
-  const info = await transport.sendMail(msg);
-
-  console.log(info);
+  await transport.sendMail(msg);
 };
 
 export { registerEmail, forgotPasswordEmail };
